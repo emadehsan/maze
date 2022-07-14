@@ -4,13 +4,13 @@ A simplified approach to Maze Generation, Visualization and Solving using differ
 ## Quick Start
 
 ```bash
-git clone https://github.com/emadehsan/maze
+$ git clone https://github.com/emadehsan/maze
 
-cd maze/src
+$ cd maze/src
 
-python rectangular.py
+$ python rectangular.py
 ```
 
 ## Current Mazes
-* Rectangular Maze using Randomized Prim's Algorithm
+* Rectangular Maze using Randomized Prim's Algorithm [[Tutorial](https://www.youtube.com/watch?v=d5yzKkG1n1U)]
 * [more coming soon]

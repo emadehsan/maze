@@ -1,6 +1,6 @@
 import pprint
 import random
-import time
+
 
 class PrimsRandomized:
     '''
@@ -20,11 +20,8 @@ class PrimsRandomized:
         self.BOTTOM = 2
         self.RIGHT = 3
 
-    def prims_mst(self, random_seed=False):
+    def prims_mst(self):
         # creates Minimum Spanning Tree using Randomized Prim's
-
-        if random_seed:
-            random.seed(time.time())
 
         # the minimum spanning tree has no edges in the start
         # and it is represented like an adjacency list

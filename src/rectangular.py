@@ -11,9 +11,11 @@ class RectMaze:
     def create_square(self):
         side = self.sideLen * 5
         x = - side / 2
-        y = - x
+        y = side / 2
 
+        penup()
         goto(x, y)
+        pendown()
 
         for i in range(4):
             forward(side)
@@ -29,6 +31,7 @@ class RectMaze:
         for row in range(self.n):
             for col in range(self.n):
                 pendown()
+
                 forward(self.sideLen)
                 right(90)
                 forward(self.sideLen)
@@ -102,11 +105,14 @@ class RectMaze:
 
 if __name__ == '__main__':
     pensize(2)
+    hideturtle()
+    speed(30)
 
-    n = 20
+    n = 25
     sideLen = 30
 
     rm = RectMaze(n, sideLen)
-    rm.create_square()
-
+    # rm.create_square()
+    # rm.create_grid()
+    rm.create_maze()
     done()
