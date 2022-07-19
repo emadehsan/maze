@@ -62,6 +62,8 @@ class CircularMaze:
         # takes 2D index of current cell and returns index of its parent in 1D
         if level <= 0:
             raise Exception(f'Level {level} has no parent')
+        elif level == 1:
+            return 0
 
         parent = self.index_1d_from_2d(level - 1, cell)
 
@@ -96,11 +98,7 @@ class CircularMaze:
         return right
 
     def create_dfs_tree(self):
-        # uses randomized Depth First Search
 
-        # the key of this dict is a string of the form "smaller_idx_cell:larger_idx_cell".
-        # a key "smaller_idx_cell:larger_idx_cell" represents an edge / connection / link between
-        # cells identified smaller_idx_cell & larger_idx_cell.
         graph = {}
 
         # pick a random starting cell
@@ -111,9 +109,6 @@ class CircularMaze:
         # stack will help us do depth first search without recursion
         stack = deque()
         stack.append(cell_1d)
-
-        # pick one of unvisited neighbours of startCell and visit it
-        # else pick a cell from stack
 
         while len(visited) < self.total_cells:
             level, cell = self.index_2d_from_1d(cell_1d)
@@ -163,12 +158,18 @@ class CircularMaze:
                 visited.append(next_cell)
                 stack.append(next_cell)
 
-                # add a connection to the graph
-                # key consists of indexes in increasing order separated by :
-                if cell_1d < next_cell:
-                    graph[f'{cell_1d}:{next_cell}'] = True
+                # add connection in both directions
+                # cell_1d -> next_cell
+                if cell_1d in graph:
+                    graph[cell_1d].append(next_cell)
                 else:
-                    graph[f'{next_cell}:{cell_1d}'] = True
+                    graph[cell_1d] = [next_cell]
+
+                # next_cell -> cell_1d
+                if next_cell in graph:
+                    graph[next_cell].append(cell_1d)
+                else:
+                    graph[next_cell] = [cell_1d]
 
                 cell_1d = next_cell
             else:
@@ -220,8 +221,7 @@ class CircularMaze:
 
         # circle(radius)
 
-    def draw_maze(self):
-        graph = self.create_dfs_tree()
+    def draw_maze(self, graph):
 
         penup()
 
@@ -254,18 +254,8 @@ class CircularMaze:
                 parent_cell = self.parent_index_1d(level, cell)
                 left_cell = self.left_index_1d(level, cell)
 
-                # parent has index that is less than current cell
-                connection_to_parent = f'{parent_cell}:{cell_1d}'
-
-                # left_cell can have higher index if the current cell is the
-                # first cell and left cell is last cell of level
-                if left_cell < cell_1d:
-                    connection_to_left = f'{left_cell}:{cell_1d}'
-                else:
-                    connection_to_left = f'{cell_1d}:{left_cell}'
-
                 # draw vertical line between current cell and its left_cell if they are not connected
-                if connection_to_left not in graph:
+                if left_cell not in graph[cell_1d]:
                     pendown()
                     forward(self.line_size)
                     penup()
@@ -275,16 +265,8 @@ class CircularMaze:
 
                 # if current cell & parent are connected, don't draw arc.
                 # but do move the arc length to move the cursor to desired position for next cell
-                if connection_to_parent not in graph:
+                if parent_cell not in graph[cell_1d]:
                     pendown()
-
-                # TODO fix it
-                #     # for extra hardness, open just one connection to level-0
-                # if level == 1 and cell == level_1_open_slot:
-                #     # from level 1. So, keep pendown for all slots other than level_1_open_slot
-                #     penup()
-                # elif level == 1:
-                #     pendown()
 
                 # turn for the arch
                 left(90)
@@ -304,15 +286,16 @@ class CircularMaze:
 
         num_cells = self.num_cells_at_level[-1]
         arcAngle = 360 / num_cells
-        skipArc = random.randint(0, num_cells - 1)
+
+        skip_arc = random.randint(0, num_cells - 1)
 
         for cell in range(num_cells):
-            if cell == skipArc:
+            if cell == skip_arc:
                 penup()
 
             circle(radius, arcAngle)
 
-            if cell == skipArc:
+            if cell == skip_arc:
                 pendown()
 
 
@@ -321,17 +304,14 @@ if __name__ == '__main__':
     hideturtle()
     speed(100)
 
-    n = 3
-    line_size = 50
+    n = 20
+    line_size = 20
     maze = CircularMaze(n, line_size)
+
+    graph = maze.create_dfs_tree()
 
     # maze.draw_circular_pattern()
 
-    maze.draw_maze()
+    maze.draw_maze(graph)
 
     done()
-
-# TODO:
-#       To in crease difficulty level, after the computeMaze function has run
-#       find the longest path from center cell (level-0) to boundary level
-#       open a slot in that level's corresponding cell
