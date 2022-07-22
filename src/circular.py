@@ -7,10 +7,10 @@ from turtle import *
 
 class CircularMaze:
 
-    def __init__(self, n, line_size):
+    def __init__(self, n, r):
 
         self.num_levels = n
-        self.line_size = line_size
+        self.line_length = r
 
         # list containing number of cells at each level
         self.num_cells_at_level = self.cell_count_by_level()
@@ -181,19 +181,21 @@ class CircularMaze:
 
         for level in range(self.num_levels):
 
-            radius = level * self.line_size
+            radius = level * self.line_length
+
+            # for this level, the circle would be divided into num_cells number of arcs
+            arcAngle = 360 / self.num_cells_at_level[level]
+
             goto(radius, 0)
 
             for cell in range(self.num_cells_at_level[level]):
-                # for this level, the circle would be divided into num_cells number of arcs
-                arcAngle = 360 / self.num_cells_at_level[level]
 
                 # draw the vertical line
-                forward(self.line_size)
+                forward(self.line_length)
 
                 # come back to the drawing position
                 penup()
-                backward(self.line_size)
+                backward(self.line_length)
                 pendown()
 
                 # turn to draw the arch
@@ -204,7 +206,7 @@ class CircularMaze:
                 right(90)
 
         # draw the outer boundary
-        radius = self.num_levels * self.line_size
+        radius = self.num_levels * self.line_length
 
         penup()
 
@@ -238,13 +240,13 @@ class CircularMaze:
         for level in range(1, self.num_levels):
 
             # draw level 1's bottom arc with bigger radius (that's why level+1)
-            radius = level * self.line_size
+            radius = level * self.line_length
+
+            arcAngle = 360 / self.num_cells_at_level[level]
 
             penup()
             goto(radius, 0)
             setheading(0)
-
-            arcAngle = 360 / self.num_cells_at_level[level]
 
             for cell in range(self.num_cells_at_level[level]):
 
@@ -257,11 +259,11 @@ class CircularMaze:
                 # draw vertical line between current cell and its left_cell if they are not connected
                 if left_cell not in graph[cell_1d]:
                     pendown()
-                    forward(self.line_size)
+                    forward(self.line_length)
                     penup()
 
                     # come back to the starting position
-                    backward(self.line_size)
+                    backward(self.line_length)
 
                 # if current cell & parent are connected, don't draw arc.
                 # but do move the arc length to move the cursor to desired position for next cell
@@ -277,7 +279,7 @@ class CircularMaze:
                 penup()
 
         # draw the boundary circle while leaving entrance gate open
-        radius = self.num_levels * self.line_size
+        radius = self.num_levels * self.line_length
 
         penup()
         goto(radius, 0)
@@ -301,17 +303,17 @@ class CircularMaze:
 
 if __name__ == '__main__':
     pensize(2)
-    hideturtle()
     speed(100)
+    hideturtle()
 
     n = 20
-    line_size = 20
-    maze = CircularMaze(n, line_size)
-
-    graph = maze.create_dfs_tree()
+    r = 20
+    maze = CircularMaze(n, r)
 
     # maze.draw_circular_pattern()
 
-    maze.draw_maze(graph)
+    tree = maze.create_dfs_tree()
+
+    maze.draw_maze(tree)
 
     done()
