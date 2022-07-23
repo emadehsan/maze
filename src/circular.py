@@ -99,7 +99,9 @@ class CircularMaze:
 
     def create_dfs_tree(self):
 
-        graph = {}
+        graph = {
+            node: [] for node in range(self.total_cells)
+        }
 
         # pick a random starting cell
         cell_1d = random.randint(0, self.total_cells - 1)
@@ -160,16 +162,9 @@ class CircularMaze:
 
                 # add connection in both directions
                 # cell_1d -> next_cell
-                if cell_1d in graph:
-                    graph[cell_1d].append(next_cell)
-                else:
-                    graph[cell_1d] = [next_cell]
-
+                graph[cell_1d].append(next_cell)
                 # next_cell -> cell_1d
-                if next_cell in graph:
-                    graph[next_cell].append(cell_1d)
-                else:
-                    graph[next_cell] = [cell_1d]
+                graph[next_cell].append(cell_1d)
 
                 cell_1d = next_cell
             else:
