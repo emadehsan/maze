@@ -293,7 +293,7 @@ if __name__ == '__main__':
     speed(100)
     pensize(2)
 
-    tm = TriangularMaze(sideLen=30, numLevels=30)
+    tm = TriangularMaze(sideLen=50, numLevels=4)
     # tm = TriangularMaze(sideLen=16, numLevels=58)
     # print("numLevels", tm.numLevels)
     # print("sideLen", tm.sideLen)
