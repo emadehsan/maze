@@ -103,8 +103,9 @@ class CircularMaze:
             node: [] for node in range(self.total_cells)
         }
 
-        # pick a random starting cell
-        cell_1d = random.randint(0, self.total_cells - 1)
+        # pick a random starting cell other then the center cell
+        # we want only one path to center
+        cell_1d = random.randint(1, self.total_cells - 1)
 
         visited = [cell_1d]
 
@@ -157,16 +158,20 @@ class CircularMaze:
             if len(unvisited_connections) > 0:
                 next_cell = random.choice(unvisited_connections)
 
-                visited.append(next_cell)
-                stack.append(next_cell)
-
                 # add connection in both directions
                 # cell_1d -> next_cell
                 graph[cell_1d].append(next_cell)
                 # next_cell -> cell_1d
                 graph[next_cell].append(cell_1d)
 
-                cell_1d = next_cell
+                visited.append(next_cell)
+
+                # if it is a center cell, do not include it in stack, we want to end current path here
+                if next_cell != 0:
+                    stack.append(next_cell)
+                    cell_1d = next_cell
+                else:
+                    cell_1d = stack.pop()
             else:
                 cell_1d = stack.pop()
 
