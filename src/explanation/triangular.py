@@ -1,6 +1,7 @@
 import pprint
 from turtle import *
 import math
+import time
 
 class TriangularAnimation:
 
@@ -14,12 +15,9 @@ class TriangularAnimation:
 
         # colors from https://flatuicolors.com/palette/defo
         self.colors = ['#1abc9c', '#3498db', '#9b59b6', '#34495e', '#2ecc71',
-                       '#2980b9', '#8e44ad',
-                       '#2c3e50',
-                       '#16a085',
-                       '#7f8c8d',
-                       '#27ae60',
-                       '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6', '#f39c12', '#d35400', '#c0392b']
+                       '#2980b9', '#8e44ad', '#2c3e50', '#16a085', '#7f8c8d',
+                       '#27ae60', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6',
+                       '#f39c12', '#d35400', '#c0392b']
 
         # key = level, value = list of tuples containing coordinates of centers of triangles
         self.node_coordinates = {
@@ -130,7 +128,9 @@ class TriangularAnimation:
                 penup()
                 goto(x, y)
 
-                if lvl < self.num_levels - 1:
+                # only draw downward connection for even indexed triangles before last level
+                # because those triangles have their base connected to triangles below them
+                if i % 2 == 0 and lvl < self.num_levels - 1:
                     # draw vertical line downwards of size triangle_height
                     setheading(-90)
                     pendown()
@@ -152,10 +152,10 @@ if __name__ == '__main__':
     hideturtle()
     # pensize
     ps = 8
-    speed(100)
+    speed(0)
 
     side_len = 100
-    num_levels = 5
+    num_levels = 4
 
     TA = TriangularAnimation(side_len, num_levels)
     TA.draw_triangle_stack(ps)
@@ -164,6 +164,8 @@ if __name__ == '__main__':
 
     # draw edges a little thinner
     TA.draw_edges_between_nodes(ps=4)
+
+    time.sleep(3)
 
     TA.undo_triangles(ps)
 
