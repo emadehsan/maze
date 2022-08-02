@@ -48,13 +48,10 @@ class TriangularMaze:
 
         return perpendicular
 
-    def create_graph(self):
+    def get_graph_edges(self):
         # creates a graph aligned with triangular pattern
         # exactly what's required for our Maze algorithm
-
-        graph = {
-            cell: [0, 0, 0, 0] for cell in range(self.total_cells)
-        }
+        # only returns the edges invovled
 
         edges = []
 
@@ -66,32 +63,15 @@ class TriangularMaze:
                 cell_1d = self.index_1d(lvl, tri)
 
                 if tri > 0:
-                    graph[cell_1d][self.LEFT] = 1
                     left_1d = cell_1d - 1
                     edges.append((cell_1d, left_1d))
 
-                if tri < num_triangles - 1:
-                    graph[cell_1d][self.RIGHT] = 1
-
-                    # don't add edge this edge. it is already added in flipped form in above conditional
-                    # to avoid duplication
-                    # right_1d = cell_1d + 1
-                    # edges.append((cell_1d, right_1d))
-
                 if tri % 2 == 0 and lvl < self.num_levels - 1:
                     # all even indexed triangles are connected downward
-                    graph[cell_1d][self.CHILD] = 1
                     child_1d = sum(self.num_cells_at_level[:lvl + 1]) + tri + 1  # index of child
                     edges.append((cell_1d, child_1d))
 
-                elif tri % 2 != 0 and lvl > 0:
-                    graph[cell_1d][self.PARENT] = 1
-
-                    # don't add parent of current child. the flip edge for this relation is already added
-                    # parent_1d = sum(self.num_cells_at_level[:lvl - 1]) + tri - 1  # index of child
-                    # edges.append((cell_1d, parent_1d))
-
-        return graph, edges
+        return edges
 
     def kruskal_spanning_tree(self, edges):
         # creates Spanning Tree using Randomized Kruskal's:
@@ -127,7 +107,7 @@ class TriangularMaze:
                 neighbour_dir = self.get_neighbour_dir(cell2, cell1)
                 spanning_tree[cell2][neighbour_dir] = 1
 
-        return spanning_tree, disjoint
+        return spanning_tree
 
     def index_2d(self, cell_1d) -> Tuple[int, int]:
         # takes index of cell in 1-D array form and converts to 2D
@@ -277,27 +257,12 @@ if __name__ == '__main__':
     speed(100)
     pensize(2)
 
-    tm = TriangularMaze(side_len=20, num_levels=20)
+    tm = TriangularMaze(side_len=20, num_levels=45)
 
-    graph, edges = tm.create_graph()
+    edges = tm.get_graph_edges()
 
-    print('Edges:', len(edges))
-    pprint.pp(edges)
+    spanning_tree = tm.kruskal_spanning_tree(edges)
 
-    spanning_tree, disjoint = tm.kruskal_spanning_tree(edges)
-    print('Spanning Tree')
-    pprint.pp(spanning_tree)
-
-    print('Disjoint Set')
-    pprint.pp(disjoint.parent)
-
-    # tm = TriangularMaze(sideLen=16, numLevels=58)
-    # print("numLevels", tm.numLevels)
-    # print("sideLen", tm.sideLen)
-
-    # tm.draw_pyramid_of_triangles()
-    # pprint.pp(tm.computeMaze())
-    # pprint.pp(tm.graph)
     tm.draw_triangular_maze(spanning_tree)
 
     done()
