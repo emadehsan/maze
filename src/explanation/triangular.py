@@ -152,10 +152,12 @@ if __name__ == '__main__':
     hideturtle()
     # pensize
     ps = 8
-    speed(0)
+    speed(5)
 
     side_len = 100
     num_levels = 4
+
+    time.sleep(3)
 
     TA = TriangularAnimation(side_len, num_levels)
     TA.draw_triangle_stack(ps)
@@ -165,12 +167,14 @@ if __name__ == '__main__':
     # draw edges a little thinner
     TA.draw_edges_between_nodes(ps=4)
 
-    time.sleep(3)
+    time.sleep(1)
 
     TA.undo_triangles(ps)
 
     # draw edges again to fix eraser effect
     TA.draw_edges_between_nodes(ps=4)
+
+    # TA.draw_triangle_stack()
 
     # TODO
     # 1. find Spanning Tree through some algorithm
