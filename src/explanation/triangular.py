@@ -1,3 +1,8 @@
+'''
+code used for animation to explain the triangular pattern and graph
+in the Triangular Maze video
+'''
+
 import pprint
 from turtle import *
 import math
