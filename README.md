@@ -1,7 +1,9 @@
 # Maze
-A simplified approach to Maze Generation, Visualization and Solving using different algorithms.
 
-<img src="./media/hexagonal_colored_levels.PNG" alt="Hexagonal Maze in Python" width="600"/>
+https://user-images.githubusercontent.com/7283624/183983986-626d8a34-1e45-40c2-af9a-79ddd010a31a.mp4
+
+
+To understand how these Mazes are constructed, watch the accompanying [⏵︎video tutorials](https://www.youtube.com/watch?v=d5yzKkG1n1U&list=PLUNDATSEu7fiBiwCEkXr_ncDGYQMkoevr).
 
 ## Quick Start
 No installations required. Just clone this repository and run code
