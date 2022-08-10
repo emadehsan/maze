@@ -1,7 +1,7 @@
 # Maze
 A simplified approach to Maze Generation, Visualization and Solving using different algorithms.
 
-<img src="./media/hexagonal_colored_levels.PNG" alt="Hexagonal Maze in Python" width="500"/>
+<img src="./media/hexagonal_colored_levels.PNG" alt="Hexagonal Maze in Python" width="600"/>
 
 ## Quick Start
 No installations required. Just clone this repository and run code
@@ -14,8 +14,14 @@ $ cd maze/src
 # draw a rectangular maze
 $ python rectangular.py
 
-# or a circular one
+# or a circular maze
 $ python circular.py
+
+# or a triangular maze
+$ python triangular.py
+
+# or a hexagonal maze
+$ python hexagonal.py
 ```
 
 ## Current Mazes
