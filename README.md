@@ -1,7 +1,7 @@
 # Maze
 A simplified approach to Maze Generation, Visualization and Solving using different algorithms.
 
-![Mazes](./media/header.jpg)
+<img src="./media/hexagonal_colored_levels.PNG" alt="Hexagonal Maze in Python" width="500"/>
 
 ## Quick Start
 No installations required. Just clone this repository and run code

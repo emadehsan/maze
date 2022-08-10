@@ -10,7 +10,7 @@ from color_scheme import ColorScheme
 class HexagonalMaze:
     '''
     the levels of Hexagon are not horizontal. They are sort of diagonal.
-    Look at gallery/reference-hexagon-for-maze.PNG
+    Look at media/reference-hexagon-for-maze.PNG
 
     middle level has the most cell
     '''
@@ -34,13 +34,15 @@ class HexagonalMaze:
 
         # edges counted counter clockwise start from bottom
         self.BOTTOM = 0
-        self.RIGHT_BOTTOM = 1
-        self.RIGHT_TOP = 2
+        self.BOTTOM_RIGHT = 1
+        self.TOP_RIGHT = 2
         self.TOP = 3
-        self.LEFT_TOP = 4
-        self.LEFT_BOTTOM = 5
+        self.TOP_LEFT = 4
+        self.BOTTOM_LEFT = 5
 
         self.clr_scheme = ColorScheme()
+
+        self.spanning_tree = []
 
     def calc_num_cells_at_each_level(self):
         num_cells = [0 for i in range(self.num_levels)]
@@ -153,19 +155,14 @@ class HexagonalMaze:
             return self.index_1d(level + 1, cell + 1)
         return self.index_1d(level + 1, cell)
 
-    def _make_graph_key(self, cell1, cell2):
-        # the key of graph hashmap is from smaller indexed cell to higher indexed cell
-        key = f'{cell1}:{cell2}'
-        if cell2 < cell1:
-            key = f'{cell2}:{cell1}'
-        return key
+    def create_dfs_tree(self):
+        # using DFS randomized, creates a Spanning Tree
 
-    def computeMaze(self):
-        # DFS randomized
-
-        # hashmap with each entry corresponding to the connectiong between cells
-        # format of key: "smaller_id_cell:larger_id_cell"
-        graph = {}
+        # 0 means not connected, 1 means connected. order of neighbours:
+        # BOTTOM, RIGHT_BOTTOM, RIGHT_TOP, TOP, LEFT_TOP, LEFT_BOTTOM
+        spanning_tree = [
+            [0, 0, 0, 0, 0, 0] for _ in range(self.total_cells)
+        ]
 
         # pick a random starting cell
         cell_1d = random.randint(0, self.total_cells - 1)
@@ -189,50 +186,59 @@ class HexagonalMaze:
                 self.right_child_idx(level, cell),
             ]
 
-            validConnections = []
+            valid_connections = []
             for conn in connections:
                 if conn is not None and conn not in visited:
-                    validConnections.append(conn)
+                    valid_connections.append(conn)
 
-            if len(validConnections) > 0:
-                nextCell = random.choice(validConnections)
+            if len(valid_connections) > 0:
+                next_cell = random.choice(valid_connections)
 
-                visited.append(nextCell)
-                stack.append(nextCell)
+                visited.append(next_cell)
+                stack.append(next_cell)
 
-                # add this connection to the graph
-                # the key represents connection from lower indexed cell to higher indexed cell
-                key = self._make_graph_key(cell_1d, nextCell)
-                graph[key] = True
+                # add this connection to the graph, for both cells
+                # get direction of next_cell compared to cell_1d & vice versa
+                direction = self.get_neighbour_dir(cell_1d, next_cell)
+                spanning_tree[cell_1d][direction] = 1
 
-                cell_1d = nextCell
+                reverse_direction = self.get_neighbour_dir(next_cell, cell_1d)
+                spanning_tree[next_cell][reverse_direction] = 1
+
+                cell_1d = next_cell
             else:
                 cell_1d = stack.pop()
 
-        return graph
+        return spanning_tree
 
-    def is_connected_to(self, level, cell, direction):
-        cell_1d = self.index_1d(level, cell)
+    def get_neighbour_dir(self, cell1, cell2):
+        # gives the direction of cell2 with respect to cell1
+        # reference: media/reference-hexagon-for-maze.PNG
 
-        get_conn_id = {
-            self.BOTTOM: self.left_child_idx,
-            self.RIGHT_BOTTOM: self.right_child_idx,
-            self.RIGHT_TOP: self.right_cell_idx,
-            self.TOP: self.right_parent_idx,
-            self.LEFT_TOP: self.left_parent_idx,
-            self.LEFT_BOTTOM: self.left_cell_idx
+        c1_level, c1_idx = self.index_2d(cell1)
+
+        # using brute force approach, because using conditionals
+        # to find direction of cell2 relative cell1 is too complex
+        connection_indices = {
+            self.BOTTOM: self.left_child_idx(c1_level, c1_idx),
+            self.BOTTOM_RIGHT: self.right_child_idx(c1_level, c1_idx),
+            self.TOP_RIGHT: self.right_cell_idx(c1_level, c1_idx),
+            self.TOP: self.right_parent_idx(c1_level, c1_idx),
+            self.TOP_LEFT: self.left_parent_idx(c1_level, c1_idx),
+            self.BOTTOM_LEFT: self.left_cell_idx(c1_level, c1_idx)
         }
 
-        conn_id = get_conn_id[direction](level, cell)
+        # return the direction where the cell matches the other
+        for direction, idx in connection_indices.items():
+            if idx == cell2:
+                return direction
 
-        if conn_id is None:
-            return False
-
-        key = self._make_graph_key(cell_1d, conn_id)
-        return key in self.graph
+    def is_connected_to(self, cell_1d, direction):
+        return self.spanning_tree[cell_1d][direction] == 1
 
     def draw_hexagonal_maze(self):
-        # these equations are reached from trial and error:
+        self.spanning_tree = self.create_dfs_tree()
+
         # relative to origin, the starting point of first hexagon (bottom-left vertex)
         x = - self.side_len * (self.num_levels - self.num_cells_at_level[0] / 2)
         y = self.y_component * (self.num_levels - self.num_cells_at_level[0] - 1)
@@ -243,29 +249,37 @@ class HexagonalMaze:
 
             for cell in range(self.num_cells_at_level[level]):
                 # we will draw 3 edges of each hexagon
-                # because inner hexagons share boundaries with others
+                # because inner hexagons share boundaries with others.
                 # but we will draw the boundary for all the boundary hexagons
                 penup()
                 setheading(0)
                 goto(x, y)
 
+                self.clr_scheme.next_color(color)
+
+                # get 1d index of cell
+                cell_1d = self.index_1d(level, cell)
+
                 # draw bottom
                 # to add gate, skip first cell of last level
                 is_bottom_gate = cell == 0 and level == self.num_levels - 1
-                if not self.is_connected_to(level, cell, self.BOTTOM) and not is_bottom_gate:
+
+                # if cell is not connected to bottom cell or it is not a gate, draw the bottom line
+                # to close the connection with bottom cell
+                if not self.is_connected_to(cell_1d, self.BOTTOM) and not is_bottom_gate:
                     pendown()
                 forward(self.side_len)
                 penup()
 
                 # draw bottom right edge
-                if not self.is_connected_to(level, cell, self.RIGHT_BOTTOM):
+                if not self.is_connected_to(cell_1d, self.BOTTOM_RIGHT):
                     pendown()
                 left(60)
                 forward(self.side_len)
                 penup()
 
                 # draw top right edge
-                if not self.is_connected_to(level, cell, self.RIGHT_TOP):
+                if not self.is_connected_to(cell_1d, self.TOP_RIGHT):
                     pendown()
                 left(60)
                 forward(self.side_len)
@@ -277,7 +291,7 @@ class HexagonalMaze:
                 '''
                 is_first_level = level == 0
                 is_first_cell = cell == 0
-                # is_last_cell = cell == self.numCellsAtLevel[level] - 1
+
                 # number of cells increase in each level up until middle level
                 is_num_cells_increasing = level <= self.middle_level
 
@@ -291,27 +305,26 @@ class HexagonalMaze:
                 # for top gate too, top edge should be skipped
                 is_top_gate = level == 0 and self.is_last_cell(level, cell)
 
-                if should_draw_top and not self.is_connected_to(level, cell, self.TOP) and not is_top_gate:
+                if should_draw_top and not self.is_connected_to(cell_1d, self.TOP) and not is_top_gate:
                     pendown()
                 left(60)
                 forward(self.side_len)
                 penup()
 
                 # top left edge
-                if should_draw_left_top and not self.is_connected_to(level, cell, self.LEFT_TOP):
+                if should_draw_left_top and not self.is_connected_to(cell_1d, self.TOP_LEFT):
                     pendown()
                 left(60)
                 forward(self.side_len)
                 penup()
 
                 # bottom left edge
-                if should_draw_left_bottom and not self.is_connected_to(level, cell, self.LEFT_BOTTOM):
+                if should_draw_left_bottom and not self.is_connected_to(cell_1d, self.BOTTOM_LEFT):
                     pendown()
                 left(60)
                 forward(self.side_len)
                 penup()
 
-                # x += self.sideLen + self.x_component
                 x += 1.5 * self.side_len  # + self.x_component
                 y += self.y_component
 
@@ -410,24 +423,17 @@ class HexagonalMaze:
 if __name__ == '__main__':
     hideturtle()
     speed(100)
-    pensize(5)
+    pensize(2)
 
     # set full screen for canvas
     screen = Screen()
     screen.setup(width=1.0, height=1.0)
 
-    hm = HexagonalMaze(side_len=30, num_levels=15)
+    hm = HexagonalMaze(side_len=18, num_levels=25)
 
-    bgcolor(hm.clr_scheme.bg_color)
+    bgcolor(hm.clr_scheme.bg_color3)
     color(hm.clr_scheme.drawing_color)
 
-    # print("numCellsAtLevel:", hm.numCellsAtLevel)
-    # print("Graph")
-    # pprint.pp(hm.graph)
-    # print("Total Cells", hm.totalCellsInMaze)
-    # print("Total connections: ", len(hm.graph))
-
-    # hm.draw_hexagonal_maze()
-    hm.draw_hexagons()
+    hm.draw_hexagonal_maze()
 
     done()

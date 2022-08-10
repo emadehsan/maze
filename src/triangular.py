@@ -1,7 +1,6 @@
 import math
 import pprint
 import random
-from collections import deque
 from turtle import *
 from typing import Tuple
 
@@ -11,7 +10,7 @@ from algorithms.disjoint_set import DisjointSet
 class TriangularMaze:
 
     def __init__(self, side_len, num_levels):
-        # TODO: it is good to have even number of levels?
+        # TODO: check if it is good to have even number of levels?
 
         self.side_len = side_len
         self.num_levels = num_levels
@@ -51,7 +50,7 @@ class TriangularMaze:
     def get_graph_edges(self):
         # creates a graph aligned with triangular pattern
         # exactly what's required for our Maze algorithm
-        # only returns the edges invovled
+        # only returns the edges involved
 
         edges = []
 
