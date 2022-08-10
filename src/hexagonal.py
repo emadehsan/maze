@@ -423,15 +423,15 @@ class HexagonalMaze:
 if __name__ == '__main__':
     hideturtle()
     speed(100)
-    pensize(2)
+    pensize(6)
 
     # set full screen for canvas
     screen = Screen()
     screen.setup(width=1.0, height=1.0)
 
-    hm = HexagonalMaze(side_len=18, num_levels=25)
+    hm = HexagonalMaze(side_len=30, num_levels=15)
 
-    bgcolor(hm.clr_scheme.bg_color3)
+    bgcolor(hm.clr_scheme.bg_color)
     color(hm.clr_scheme.drawing_color)
 
     hm.draw_hexagonal_maze()
