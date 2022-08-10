@@ -257,6 +257,10 @@ if __name__ == '__main__':
     speed(100)
     pensize(2)
 
+    # set full screen for canvas
+    screen = Screen()
+    screen.setup(width=1.0, height=1.0)
+
     tm = TriangularMaze(side_len=20, num_levels=45)
 
     edges = tm.get_graph_edges()

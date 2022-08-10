@@ -7,6 +7,8 @@ import pprint
 from turtle import *
 import math
 import time
+from src.color_scheme import ColorScheme
+
 
 class TriangularAnimation:
 
@@ -18,18 +20,13 @@ class TriangularAnimation:
 
         self.triangle_height = self._compute_triangle_height()
 
-        # colors from https://flatuicolors.com/palette/defo
-        self.colors = ['#1abc9c', '#3498db', '#9b59b6', '#34495e', '#2ecc71',
-                       '#2980b9', '#8e44ad', '#2c3e50', '#16a085', '#7f8c8d',
-                       '#27ae60', '#f1c40f', '#e67e22', '#e74c3c', '#95a5a6',
-                       '#f39c12', '#d35400', '#c0392b']
+        self.clr_scheme = ColorScheme()
 
         # key = level, value = list of tuples containing coordinates of centers of triangles
         self.node_coordinates = {
             lvl: [] for lvl in range(num_levels)
         }
 
-        self.color_idx = 0
 
     def _compute_triangle_height(self):
         # apply Pythagoras theorem
@@ -45,10 +42,6 @@ class TriangularAnimation:
             forward(self.side_len)
             left(120)
 
-    def next_color(self):
-        color(self.colors[self.color_idx % len(self.colors)])
-        self.color_idx += 1
-
     def draw_triangle_stack(self, ps=8, erase=False):
         pensize(ps)
 
@@ -61,15 +54,16 @@ class TriangularAnimation:
 
             x = - self.side_len * num_triangles / 2
 
+            # all triangles on same level have same color
+            self.clr_scheme.next_color(color)
+            if erase:
+                color('white')
+
             # draw all triangles on this level
             for n in range(num_triangles):
                 penup()
                 goto(x, y)
                 pendown()
-
-                self.next_color()
-                if erase:
-                    color('white')
 
                 self.draw_triangle()
                 x += self.side_len
@@ -88,8 +82,6 @@ class TriangularAnimation:
         # the y position first node is at the center of first triangle
         y = total_height / 2 + self.triangle_height / 2
 
-        color_idx = 0
-
         for lvl in range(self.num_levels):
             # number of triangles on this level
             # the number of triangles that actually appear at each level is 2*n+1 . but we only draw n+1
@@ -105,12 +97,10 @@ class TriangularAnimation:
                 pendown()
 
                 # keep record of node / triangle centers for current level
-                self.node_coordinates[lvl].append((x,y))
+                self.node_coordinates[lvl].append((x, y))
 
-                clr = self.colors[color_idx % len(self.colors)]
-                color_idx += 1
-
-                dot(14, clr)
+                self.clr_scheme.next_color(color)
+                dot(14)
 
                 x += self.side_len / 2
 
@@ -139,7 +129,7 @@ class TriangularAnimation:
                     # draw vertical line downwards of size triangle_height
                     setheading(-90)
                     pendown()
-                    self.next_color()
+                    self.clr_scheme.next_color(color)
                     forward(self.triangle_height)
                     penup()
 
@@ -148,7 +138,7 @@ class TriangularAnimation:
                     setheading(0)
                     goto(x, y)
                     pendown()
-                    self.next_color()
+                    self.clr_scheme.next_color(color)
                     forward(self.side_len/2)
                     penup()
 
@@ -158,6 +148,10 @@ if __name__ == '__main__':
     # pensize
     ps = 8
     speed(5)
+
+    # set full screen for canvas
+    screen = Screen()
+    screen.setup(width=1.0, height=1.0)
 
     side_len = 100
     num_levels = 4

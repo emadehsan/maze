@@ -4,6 +4,7 @@ from collections import deque
 from turtle import *
 import math
 from typing import Tuple
+from color_scheme import ColorScheme
 
 
 class HexagonalMaze:
@@ -16,10 +17,13 @@ class HexagonalMaze:
 
     def __init__(self, side_len, num_levels):
         self.side_len = side_len
-        # TODO: ensure that levels are odd. for symmetric maze
+
+        # ensure that levels are odd. for symmetric maze
+        if num_levels % 2 == 0:
+            num_levels += 1
+
         self.num_levels = num_levels
 
-        # TODO: assumption, len(numCells) is odd
         self.middle_level = self.num_levels // 2
         self.num_cells_at_level = self.calc_num_cells_at_each_level()
 
@@ -36,7 +40,7 @@ class HexagonalMaze:
         self.LEFT_TOP = 4
         self.LEFT_BOTTOM = 5
 
-        self.graph = self.computeMaze()
+        self.clr_scheme = ColorScheme()
 
     def calc_num_cells_at_each_level(self):
         num_cells = [0 for i in range(self.num_levels)]
@@ -75,13 +79,13 @@ class HexagonalMaze:
 
         return perpendicular
 
-    def index1dfrom2d(self, level, cell):
+    def index_1d(self, level, cell):
         # takes the level & cell (the 2D indices) and converts them to their corresponding 1D index
         if level >= self.num_levels:
             raise Exception("level greater than maze levels")
         return sum(self.num_cells_at_level[:level]) + cell
 
-    def index2dfrom1d(self, idx) -> Tuple[int, int]:
+    def index_2d(self, idx) -> Tuple[int, int]:
         # takes index of cell in 1-D array form and converts to 2D
         if idx >= self.total_cells:
             raise Exception("1D index greater than total number of cells")
@@ -102,52 +106,52 @@ class HexagonalMaze:
     def is_last_cell(self, level, cell):
         return cell == self.num_cells_at_level[level] - 1
 
-    def left_parent_idx_1d(self, level, cell):
+    def left_parent_idx(self, level, cell):
         # cells of first level & left side of bigger hexagon have no left parent
         if level == 0 or (cell == 0 and self.have_num_cells_been_increasing(level)):
             return None
 
         if self.have_num_cells_been_increasing(level):
-            return self.index1dfrom2d(level-1, cell-1)
-        # else left parent has the same index
-        return self.index1dfrom2d(level-1, cell)
+            return self.index_1d(level - 1, cell - 1)
 
-    def right_parent_idx_1d(self, level, cell):
+        # else left parent has the same index
+        return self.index_1d(level - 1, cell)
+
+    def right_parent_idx(self, level, cell):
         # cells of first level & and last cells of first levels where num cells increase have no right parent
         if level == 0 or (self.is_last_cell(level, cell) and self.have_num_cells_been_increasing(level)):
             return None
 
         if self.have_num_cells_been_increasing(level):
-            return self.index1dfrom2d(level-1, cell)
-        return self.index1dfrom2d(level-1, cell+1)
+            return self.index_1d(level - 1, cell)
 
-    def left_cell_idx_1d(self, level, cell):
-        if cell > 0:
-            return self.index1dfrom2d(level, cell-1)
-        return None
+        return self.index_1d(level - 1, cell + 1)
 
-    def right_cell_idx_1d(self, level, cell):
+    def left_cell_idx(self, level, cell):
+        return self.index_1d(level, cell - 1) if cell > 0 else None
+
+    def right_cell_idx(self, level, cell):
         if cell < self.num_cells_at_level[level] - 1:
-            return self.index1dfrom2d(level, cell+1)
+            return self.index_1d(level, cell + 1)
         return None
 
-    def left_child_idx_1d(self, level, cell):
+    def left_child_idx(self, level, cell):
         # last level and first cell of cells after middle (inclusive) level have no left child
         if level == self.num_levels-1 or (cell == 0 and level >= self.middle_level):
             return None
 
         if level < self.middle_level:
-            return self.index1dfrom2d(level + 1, cell)
-        return self.index1dfrom2d(level + 1, cell-1)
+            return self.index_1d(level + 1, cell)
+        return self.index_1d(level + 1, cell - 1)
 
-    def right_child_idx_1d(self, level, cell):
+    def right_child_idx(self, level, cell):
         # last level and last cell of cells after middle (inclusive) level have no right child
         if level == self.num_levels - 1 or (self.is_last_cell(level, cell) and level >= self.middle_level):
             return None
 
         if level < self.middle_level:
-            return self.index1dfrom2d(level + 1, cell + 1)
-        return self.index1dfrom2d(level + 1, cell)
+            return self.index_1d(level + 1, cell + 1)
+        return self.index_1d(level + 1, cell)
 
     def _make_graph_key(self, cell1, cell2):
         # the key of graph hashmap is from smaller indexed cell to higher indexed cell
@@ -174,15 +178,15 @@ class HexagonalMaze:
             # randomly pick a neighbour of current cell and go there
 
             # get 2D representation of current cell
-            level, cell = self.index2dfrom1d(cell_1d)
+            level, cell = self.index_2d(cell_1d)
 
             connections = [
-                self.left_parent_idx_1d(level, cell),
-                self.right_parent_idx_1d(level, cell),
-                self.left_cell_idx_1d(level, cell),
-                self.right_cell_idx_1d(level, cell),
-                self.left_child_idx_1d(level, cell),
-                self.right_child_idx_1d(level, cell),
+                self.left_parent_idx(level, cell),
+                self.right_parent_idx(level, cell),
+                self.left_cell_idx(level, cell),
+                self.right_cell_idx(level, cell),
+                self.left_child_idx(level, cell),
+                self.right_child_idx(level, cell),
             ]
 
             validConnections = []
@@ -208,15 +212,15 @@ class HexagonalMaze:
         return graph
 
     def is_connected_to(self, level, cell, direction):
-        cell_1d = self.index1dfrom2d(level, cell)
+        cell_1d = self.index_1d(level, cell)
 
         get_conn_id = {
-            self.BOTTOM: self.left_child_idx_1d,
-            self.RIGHT_BOTTOM: self.right_child_idx_1d,
-            self.RIGHT_TOP: self.right_cell_idx_1d,
-            self.TOP: self.right_parent_idx_1d,
-            self.LEFT_TOP: self.left_parent_idx_1d,
-            self.LEFT_BOTTOM: self.left_cell_idx_1d
+            self.BOTTOM: self.left_child_idx,
+            self.RIGHT_BOTTOM: self.right_child_idx,
+            self.RIGHT_TOP: self.right_cell_idx,
+            self.TOP: self.right_parent_idx,
+            self.LEFT_TOP: self.left_parent_idx,
+            self.LEFT_BOTTOM: self.left_cell_idx
         }
 
         conn_id = get_conn_id[direction](level, cell)
@@ -321,16 +325,7 @@ class HexagonalMaze:
                 x = prev_x + 1.5 * self.side_len
                 y = prev_y - self.y_component
 
-
     def draw_hexagons(self):
-        # at origin 0,0
-        goto(0, 0)
-        dot(10)
-        # also draw a line of height y_component
-        setheading(90)
-        forward(self.y_component * self.num_levels)
-
-        # these equations are reached from trial and error:
         # relative to origin, the starting point of first hexagon (bottom-left vertex)
         x = - self.side_len * (self.num_levels - self.num_cells_at_level[0] / 2)
         y = self.y_component * (self.num_levels - self.num_cells_at_level[0] - 1)
@@ -339,13 +334,16 @@ class HexagonalMaze:
             prev_x = x
             prev_y = y
 
+            # each level has a unique color
+            self.clr_scheme.next_color(color)
+
             for cell in range(self.num_cells_at_level[level]):
                 # we will draw 3 edges of each hexagon
                 # because inner hexagons share boundaries with others
                 # but we will draw the boundary for all the boundary hexagons
                 penup()
-                setheading(0)
                 goto(x, y)
+                setheading(0)
 
                 # draw bottom
                 pendown()
@@ -365,7 +363,6 @@ class HexagonalMaze:
                 '''
                 is_first_level = level == 0
                 is_first_cell = cell == 0
-                # is_last_cell = cell == self.numCellsAtLevel[level] - 1
                 # number of cells increase in each level up until middle level
                 is_num_cells_increasing = level <= self.middle_level
 
@@ -396,12 +393,11 @@ class HexagonalMaze:
                 forward(self.side_len)
                 penup()
 
-                # x += self.sideLen + self.x_component
                 x += 1.5 * self.side_len  # + self.x_component
                 y += self.y_component
 
             # if cells in the next level are more than current level
-            # starting x will stay the same
+            # x for first cell at each level will stay the same
             if level < self.num_levels - 1 and self.num_cells_at_level[level] < self.num_cells_at_level[level + 1]:
                 x = prev_x
                 y = prev_y - 2 * self.y_component
@@ -414,16 +410,16 @@ class HexagonalMaze:
 if __name__ == '__main__':
     hideturtle()
     speed(100)
-    pensize(2)
-    bgcolor('#222')
-    color('white')
+    pensize(5)
+
+    # set full screen for canvas
     screen = Screen()
     screen.setup(width=1.0, height=1.0)
 
+    hm = HexagonalMaze(side_len=30, num_levels=15)
 
-    # WARNING: numLevels must be odd
-    # hm = HexagonalMaze(sideLen=12, numLevels=37)
-    hm = HexagonalMaze(side_len=30, num_levels=13)
+    bgcolor(hm.clr_scheme.bg_color)
+    color(hm.clr_scheme.drawing_color)
 
     # print("numCellsAtLevel:", hm.numCellsAtLevel)
     # print("Graph")
@@ -431,6 +427,7 @@ if __name__ == '__main__':
     # print("Total Cells", hm.totalCellsInMaze)
     # print("Total connections: ", len(hm.graph))
 
-    hm.draw_hexagonal_maze()
+    # hm.draw_hexagonal_maze()
+    hm.draw_hexagons()
 
     done()
