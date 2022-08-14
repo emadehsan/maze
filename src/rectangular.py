@@ -1,5 +1,7 @@
+import math
 from turtle import *
 from algorithms.prims_randomized import PrimsRandomized
+import time
 
 
 class RectMaze:
@@ -102,17 +104,22 @@ class RectMaze:
             penup()
             goto(x, y)
 
+    def save_screenshot(self):
+        ts = getscreen()
+        ts.getcanvas().postscript(file=f"gallery/{math.floor(time.time())}.eps")
+
 
 if __name__ == '__main__':
     pensize(2)
     hideturtle()
-    speed(30)
+    speed(0)
 
-    n = 25
-    sideLen = 30
+    n = 10
+    sideLen = 15
 
     rm = RectMaze(n, sideLen)
     # rm.create_square()
     # rm.create_grid()
     rm.create_maze()
+
     done()
