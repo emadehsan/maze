@@ -1,6 +1,6 @@
 # Maze
 Create Mazes of different types or generate Datasets to train your Maze GANs or Reinforcement Learning agents.
-Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm/settings) on Kaggle.
+Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm) on Kaggle.
 
 
 https://user-images.githubusercontent.com/7283624/183983986-626d8a34-1e45-40c2-af9a-79ddd010a31a.mp4
@@ -73,7 +73,7 @@ This will create a folder inside [`src/datasets`](src/datasets) with name
 * `spanning_tree.txt` containing the Spanning Tree edges used to create the 
 corresponding maze
 
-Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm/settings) on Kaggle.
+Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm) on Kaggle.
 
 ## Note
 * Please share your feedback by creating an issue or on Twitter
