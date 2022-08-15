@@ -53,3 +53,22 @@ You can also generate a dataset of Mazes. Right now, only Rectangular
 (actually Squared) Mazes are supported. 
 
 Use the scripts in [`src/datasets`](src/datasets).
+
+Example:
+
+```bash
+$ cd src/datasets/
+$ # add information about how many unique mazes you want to generate
+$ # at the end of this file and run: 
+$ python rectangular_kruskal_maze.py
+```
+
+This will create a folder inside [`src/datasets`](src/datasets) with name
+`rectangular_mazes_TIME`. The folder will contain 
+* Mazes as `png` images
+* `logs.txt` containing information about process (can be discarded) 
+* `spanning_tree.txt` containing the Spanning Tree edges used to create the 
+corresponding maze
+
+## Note
+* Please share your feedback by creating an issue or on Twitter

@@ -5,19 +5,18 @@ Creates Dataset of Rectangular Mazes
 import math
 import pprint
 
-from src.algorithms.prims_randomized import PrimsRandomized
 from src.algorithms.kruskal_randomized_rectangular import KruskalRectangular
 from PIL import Image, ImageDraw
 import time
 
 
-class RectangularKruskal:
+class RectangularKruskalMaze:
 
     def __init__(self, n, side_len):
         self.n = n
         self.side_len = side_len
 
-    def create_maze_image(self):
+    def create_maze_image(self, file_name=None):
 
         # create a spanning using Kruskal's Randomized to depict our maze
         algo = KruskalRectangular(self.n)
@@ -37,7 +36,7 @@ class RectangularKruskal:
 
         image_width = grid_len * self.side_len
         image_height = image_width
-        print('Image Dimensions:', image_width, 'x', image_height)
+        # print('Image Dimensions:', image_width, 'x', image_height)
 
         maze_image = Image.new(mode='1', size=(image_width, image_height), color=(0))
         canvas = ImageDraw.Draw(maze_image)
@@ -81,34 +80,28 @@ class RectangularKruskal:
         y = (2 * self.n - 1) * side
         canvas.rectangle([(x, y), (x + side, y + side)], width=side, fill='white')
 
-        maze_image.save(f'images/{math.floor(time.time())}.png')
+        if file_name is not None:
+            maze_image.save(file_name)
+        else:
+            # if path not provided, return edges and imaeg
 
-        # sort the edges so they could be saved as graph representation and compared to avoid duplicate trees
-        # each edge has a smaller indexed node at index 0. we will sort by using that vertex, all the edge tuples
-        # and this convention will be used to detect duplicates.
-        edges.sort(key=lambda edg: edg[0])
+            # sort the edges so they could be saved as graph representation and compared to avoid duplicate trees
+            # each edge has a smaller indexed node at index 0. we will sort by using that vertex, all the edge tuples
+            # and this convention will be used to detect duplicates.
+            edges.sort(key=lambda edg: edg[0])
 
-        print("Edges in the Graph:")
-        pprint.pp(edges)
+            # print("Edges in the Graph:")
+            # pprint.pp(edges)
+            return edges, maze_image
 
 
 if __name__ == '__main__':
     row_size = 10
     side_length = 20
 
-    # number of items in dataset
-    num_items = 5
+    algo = RectangularKruskalMaze(row_size, side_length)
 
-    # Plan:
-    #  1. number of items to generate
-    #  2. duplicates check and count at each iteration with named records
-    #       2.a. generation_logs_TIME will have item_id
-    #       2.b. duplicates_found_TIME will have these: item_id: duplicate_spanning_tree_as_adjacency?
-    #  3. dataset directory rectangular_maze_dataset_TIME:
-    #       will contain csv file with the spanning_tree for each image and images labeld from 0->n-1
-    #  4. Publish on Kaggle?
+    maze_image_path = f'images/{math.floor(time.time())}.png'
 
-    gr = RectangularKruskal(row_size, side_length)
-
-    gr.create_maze_image()
+    algo.create_maze_image(maze_image_path)
 
