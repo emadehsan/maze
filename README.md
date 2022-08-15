@@ -48,3 +48,8 @@ $ python hexagonal.py
 
     <img src="./media/hexagonal.PNG" alt="Hexagonal Maze using Depth First Search" width="300"/>
 
+## Generate Maze Dataset
+You can also generate a dataset of Mazes. Right now, only Rectangular 
+(actually Squared) Mazes are supported. 
+
+Use the scripts in [`src/datasets`](src/datasets).

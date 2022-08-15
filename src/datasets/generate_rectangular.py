@@ -12,12 +12,11 @@ import time
 
 class GenerateRectangular:
 
-    def __init__(self, n, side_len, wall_width):
+    def __init__(self, n, side_len):
         self.n = n
         self.side_len = side_len
-        self.wall_width = wall_width
 
-    def draw_image(self):
+    def create_maze_image(self):
 
         # create a spanning using Prims Randomized to depict our maze
         pr = PrimsRandomized(n)
@@ -25,68 +24,75 @@ class GenerateRectangular:
         # print('Spanning Tree')
         # pprint.pp(spanning_tree)
 
-        # n boxes, each has a side length = side_len and the there are n+1 walls that enclose n boxes:
-        image_width = self.n * (self.side_len + self.wall_width)
+        '''
+        the indices of grid are 0, 1, 2, ...., 2*n
+        between them, the cells that correspond to cells of maze (adjacency matrix) 
+        have indices: 1, 3, 5, ... 2*n - 1
+
+        in between these cells, we will insert 'filler' cells that will
+        represent the connection / edge between these cells or the walls.
+        that's why those gaps (even cells) exist
+        '''
+
+        grid_size = 2 * self.n + 1
+
+        image_width = grid_size * self.side_len
         image_height = image_width
         print('Image Dimensions:', image_width, 'x', image_height)
 
-        maze_image = Image.new(mode='1', size=(image_width, image_height), color=(1))
+        maze_image = Image.new(mode='1', size=(image_width, image_height), color=(0))
         canvas = ImageDraw.Draw(maze_image)
 
         # center of origin for PIL is upper left corner
 
-        # x0, y0 is the starting point of each square. it starts with 0,0
-        x0 = 0
-        y0 = 0
+        # length of the side of a box / square / cell. for easier access
+        side = self.side_len
 
-        dimension = self.side_len + self.wall_width
-
+        # the image is black. just draw white boxes where the cells appear
+        # or where a connection between two connected cell appears.
+        # we only need to draw the right and bottom connection for the current cell.
         for row in range(self.n):
             for col in range(self.n):
-                # node index in 1D form
+
+                x = (2 * col + 1) * side
+                y = (2 * row + 1) * side
+
+                # draw this cell
+                canvas.rectangle([(x, y), (x+side, y+side)], width=side, fill='white')
+
+                # cell index in 1D form
                 node = row * self.n + col
 
-                # pendown()
+                # draw connections too (each cell checks right & bottom connections)
 
-                # if node is connected to the node in TOP direction
-                # do not draw the line
-                if spanning_tree[node][pr.TOP] == 0:
-                    # draw the top line since this node is not connected to top
-                    canvas.line([(x0, y0), (x0 + dimension, y0)], width=self.wall_width)
-                    canvas.arc([(x0+dimension, y0), (x0+dimension, y0)], 0, 0, width=self.wall_width)
+                # if the node has a right neighbour and is connected to it
+                if col + 1 < self.n and spanning_tree[node][pr.RIGHT] == 1:
+                    canvas.rectangle([(x+side, y), (x + 2*side, y + side)], width=side, fill='white')
 
-                # if connected to the node on the right
-                # or the current node is the last node, keep the right side open (for the exit gate)
-                if spanning_tree[node][pr.RIGHT] == 0 and node != self.n ** 2 - 1:
-                    canvas.line([(x0 + dimension, y0), (x0 + dimension, y0 + dimension)],
-                                width=self.wall_width)
+                # if this cell has a bottom neighbour (i.e. this cell is not in the last row)
+                # and is connected to the bottom neighbour
+                if row + 1 < self.n and spanning_tree[node][pr.BOTTOM] == 1:
+                    canvas.rectangle([(x, y+1), (x + side, y + 2*side)], width=side, fill='white')
 
-                if spanning_tree[node][pr.BOTTOM] == 0:
-                    canvas.line([(x0 + dimension, y0 + dimension), (x0, y0 + dimension)],
-                                width=self.wall_width)
+        # the entrance to the maze is the box in our grid at 0,side
+        canvas.rectangle([(0, side), (side, 2*side)], width=side, fill='white')
 
-                # for the first node, keep the left gate open (entrance)
-                if spanning_tree[node][pr.LEFT] == 0 and node != 0:
-                    canvas.line([(x0, y0 + dimension), (x0, y0)],
-                                width=self.wall_width)
+        # the exit to the maze is the box in last column and 2nd last row
+        x = 2 * n * side
+        y = (2 * n - 1) * side
+        canvas.rectangle([(x, y), (x + side, y +side)], width=side, fill='white')
 
-                # go to the position to draw next square in the current row
-                x0 += dimension
-
-            # move to the next row
-            y0 += dimension
-            x0 = 0
-
-            # TODO consider wall width
         maze_image.save(f'images/{math.floor(time.time())}.png')
 
 
 if __name__ == '__main__':
     n = 10
     side_len = 20
-    wall_width = 10
 
-    gr = GenerateRectangular(n, side_len, wall_width)
+    # number of items in dataset
+    num_items = 5
 
-    gr.draw_image()
+    gr = GenerateRectangular(n, side_len)
+
+    gr.create_maze_image()
 
