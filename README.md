@@ -60,7 +60,7 @@ Example:
 $ cd src/datasets/
 $ # add information about how many unique mazes you want to generate
 $ # at the end of this file and run: 
-$ python rectangular_kruskal_maze.py
+$ python generate_rect_dataset.py
 ```
 
 This will create a folder inside [`src/datasets`](src/datasets) with name
