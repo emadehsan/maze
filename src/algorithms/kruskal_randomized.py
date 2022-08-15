@@ -9,6 +9,8 @@ class KruskalRandomized:
     '''
     Creates a Spanning Tree for given graph while picking edges at random and including their vertices in the graph
     if not already in such a way that there are no cycles
+
+    This implementation is specifc to Triangular Maze.
     '''
 
     def __init__(self, num_levels):

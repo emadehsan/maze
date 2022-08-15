@@ -15,10 +15,10 @@ class TriangularMaze:
         self.side_len = side_len
         self.num_levels = num_levels
 
-        self.PARENT = 0
+        self.TOP = 0
         self.LEFT = 1
         self.RIGHT = 2
-        self.CHILD = 3
+        self.BOTTOM = 3
 
         '''
         at each level, actual number of triangles is 2*level + 1. i.e.
@@ -141,9 +141,9 @@ class TriangularMaze:
                 return self.LEFT
         elif cell1_level < cell2_level:
             # cell2 is child of cell1
-            return self.CHILD
+            return self.BOTTOM
         elif cell1_level > cell2_level:
-            return self.PARENT
+            return self.TOP
 
     def index_1d(self, level, cell):
         # takes the level & cell (the 2D indices) and converts them to their corresponding 1D index
@@ -184,7 +184,7 @@ class TriangularMaze:
                 # if not self.is_connected_to(level, cell, self.CHILD):
                 #     pendown()
                 # draw bottom line if cell is not connected to its child
-                if spanning_tree[cell_1d][self.CHILD] == 0:
+                if spanning_tree[cell_1d][self.BOTTOM] == 0:
                     pendown()
 
                 # draw bottom
@@ -260,7 +260,7 @@ if __name__ == '__main__':
     screen = Screen()
     screen.setup(width=1.0, height=1.0)
 
-    tm = TriangularMaze(side_len=20, num_levels=45)
+    tm = TriangularMaze(side_len=30, num_levels=25)
 
     edges = tm.get_graph_edges()
 
