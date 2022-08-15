@@ -102,5 +102,3 @@ if __name__ == '__main__':
     ds = RectangularDataset(row_size, side_length, num_items)
 
     ds.create_dataset()
-
-    #  Publish on Kaggle?
