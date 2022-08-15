@@ -18,6 +18,8 @@ class RectangularDataset:
         self.num_mazes = num_mazes
 
     def create_dataset(self):
+        start_time = time.time()
+
         seconds = math.floor(time.time())
         cwd_path  = './'
         ds_name = f'rectangular_mazes_{seconds}'
@@ -82,6 +84,10 @@ class RectangularDataset:
             maze_id += 1
             mazes_remaining -= 1
 
+        output_line = f'\nTime Taken: {time.time() - start_time} seconds'
+        log_file.write(output_line)
+        print(output_line)
+
         log_file.close()
         tree_file.close()
 
@@ -91,7 +97,7 @@ if __name__ == '__main__':
     side_length = 20
 
     # number of mazes to generate in the dataset
-    num_items = 10
+    num_items = 1000
 
     ds = RectangularDataset(row_size, side_length, num_items)
 
