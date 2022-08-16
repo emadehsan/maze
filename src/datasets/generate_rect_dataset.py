@@ -26,7 +26,7 @@ class RectangularDataset:
         start_time = time.time()
 
         seconds = math.floor(time.time())
-        cwd_path  = '/'
+        cwd_path = './'
         ds_name = f'rectangular_mazes_{seconds}'
 
         # create a folder for this dataset in current directory
