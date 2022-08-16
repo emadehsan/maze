@@ -3,11 +3,16 @@ Dataset that creates Rectangular Mazes
 '''
 import math
 import time
+from sys import argv
 
 from hashlib import sha256
 from pathlib import Path
 
-from src.datasets.rectangular_kruskal_maze import RectangularKruskalMaze
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.abspath(__file__)) + "/../..")
+
+from rectangular_kruskal_maze import RectangularKruskalMaze
 
 
 class RectangularDataset:
@@ -21,7 +26,7 @@ class RectangularDataset:
         start_time = time.time()
 
         seconds = math.floor(time.time())
-        cwd_path  = './'
+        cwd_path  = '/'
         ds_name = f'rectangular_mazes_{seconds}'
 
         # create a folder for this dataset in current directory
@@ -93,12 +98,29 @@ class RectangularDataset:
 
 
 if __name__ == '__main__':
-    row_size = 10
-    side_length = 20
+    # number of cells in a single row
+    num_cells_in_row = 10
+    side_length = 10
 
     # number of mazes to generate in the dataset
-    num_items = 1000
+    num_items = 5
 
-    ds = RectangularDataset(row_size, side_length, num_items)
+    ds = RectangularDataset(num_cells_in_row, side_length, num_items)
 
     ds.create_dataset()
+
+    print('Task finished.')
+
+    # if len(argv) == 4:
+    #     num_cells_in_row = int(argv[1])
+    #     side_length = int(argv[2])
+    #     num_items = int(argv[3])
+    #     ds = RectangularDataset(num_cells_in_row, side_length, num_items)
+    #
+    #     ds.create_dataset()
+    #
+    #     print('Task finished.')
+    #
+    # else:
+    #     print('Usage:')
+    #     print('python generate_rect_dataset.py NUM_CELLS CELL_SIDE_LEN NUM_MAZES')

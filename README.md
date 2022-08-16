@@ -1,6 +1,6 @@
 # Maze
 Create Mazes of different types or generate Datasets to train your Maze GANs or Reinforcement Learning agents.
-Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm) on Kaggle.
+[Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm) on Kaggle.
 
 
 https://user-images.githubusercontent.com/7283624/183983986-626d8a34-1e45-40c2-af9a-79ddd010a31a.mp4
@@ -29,28 +29,6 @@ $ python triangular.py
 $ python hexagonal.py
 ```
 
-## Current Mazes
-* **Rectangular Maze** using Randomized Prim's Algorithm [ [tutorial](https://www.youtube.com/watch?v=d5yzKkG1n1U) ]
-
-    <img src="./media/squared.png" alt="Squared Maze using Prims Algorithm" width="300"/>
-
-
-* **Circular Maze** using Depth First Search [ [tutorial](https://www.youtube.com/watch?v=q7t8UVlu-Fk) ]
-    
-    <img src="./media/circular.png" alt="Circular Maze using Depth First Search" width="300"/>
-
-* **Triangular Maze** using Depth First Search
-
-    <img src="./media/triangular.PNG" alt="Triangular Maze using Depth First Search" width="300"/>
-
-* **Triangular Maze** using Kruskal's Algorithm 
-    
-    <img src="./media/triangular_kruskal.PNG" alt="Triangular Maze using Kruskal Algorithm" width="300"/>
-
-* **Hexagonal Maze** using Depth First Search 
-
-    <img src="./media/hexagonal.PNG" alt="Hexagonal Maze using Depth First Search" width="300"/>
-
 ## Generate Maze Dataset
 You can also generate a dataset of Mazes. Right now, only Rectangular 
 (actually Squared) Mazes are supported. 
@@ -74,6 +52,29 @@ This will create a folder inside [`src/datasets`](src/datasets) with name
 corresponding maze
 
 Link to [Rectangular Maze Dataset](https://www.kaggle.com/datasets/emadehsan/rectangular-maze-kruskals-spanning-tree-algorithm) on Kaggle.
+
+
+## Current Mazes
+* **Rectangular Maze** using Randomized Prim's Algorithm [ [tutorial](https://www.youtube.com/watch?v=d5yzKkG1n1U) ]
+
+    <img src="./media/squared.png" alt="Squared Maze using Prims Algorithm" width="300"/>
+
+
+* **Circular Maze** using Depth First Search [ [tutorial](https://www.youtube.com/watch?v=q7t8UVlu-Fk) ]
+    
+    <img src="./media/circular.png" alt="Circular Maze using Depth First Search" width="300"/>
+
+* **Triangular Maze** using Depth First Search
+
+    <img src="./media/triangular.PNG" alt="Triangular Maze using Depth First Search" width="300"/>
+
+* **Triangular Maze** using Kruskal's Algorithm 
+    
+    <img src="./media/triangular_kruskal.PNG" alt="Triangular Maze using Kruskal Algorithm" width="300"/>
+
+* **Hexagonal Maze** using Depth First Search 
+
+    <img src="./media/hexagonal.PNG" alt="Hexagonal Maze using Depth First Search" width="300"/>
 
 ## Note
 * Please share your feedback by creating an issue or on Twitter
