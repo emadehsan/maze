@@ -39,8 +39,6 @@ Example:
 
 ```bash
 $ cd src/datasets/
-$ # add information about how many unique mazes you want to generate
-$ # at the end of this file and run: 
 $ python generate_rect_dataset.py -rows 10 -width 10 -items 1000
 ```
 
