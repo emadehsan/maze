@@ -4,6 +4,7 @@ Dataset that creates Rectangular Mazes
 import math
 import time
 from sys import argv
+import argparse, sys
 
 from hashlib import sha256
 from pathlib import Path
@@ -31,7 +32,9 @@ class RectangularDataset:
 
         # create a folder for this dataset in current directory
         dataset_directory = cwd_path + ds_name
+        dataset_images_dir = f'{dataset_directory}/images/'
         Path(dataset_directory).mkdir(parents=True)
+        Path(dataset_images_dir).mkdir()
 
         # add logs.txt
         log_file_name = f'{dataset_directory}/logs.txt'
@@ -76,10 +79,11 @@ class RectangularDataset:
             # else this is a new maze
 
             # maze will be saved at this path
-            maze_image_path = f'{dataset_directory}/{maze_id}.png'
+            maze_image_path = f'{dataset_images_dir}/{maze_id}.png'
             maze_image.save(maze_image_path)
 
-            output_line = f'Maze created #{maze_id}, {key}\n'
+            # output_line = f'Maze created #{maze_id}, {key}\n' # no need to print hash (key)
+            output_line = f'Maze created #{maze_id}\n'
             log_file.write(output_line)
             print(output_line, end='')
 
@@ -96,31 +100,35 @@ class RectangularDataset:
         log_file.close()
         tree_file.close()
 
+        # return the directory of dataset
+        return Path(dataset_directory).absolute()
 
 if __name__ == '__main__':
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-rows', help='Number of row (or cells per row)')
+    parser.add_argument('-width', help='Wall width in pixels')
+    parser.add_argument('-items', help='Dataset size (number of images to generate)')
+    # parser.add_argument("-verbose", help="Verbose output")
+
+    args = parser.parse_args()
+
+    if args.rows is None or args.width is None or args.items is None:
+        print("Please provide all optional arguments.")
+        parser.print_help()
+        exit(1)
+
     # number of cells in a single row
-    num_cells_in_row = 10
-    side_length = 10
-
+    num_rows = int(args.rows)
+    side_length = int(args.width)
     # number of mazes to generate in the dataset
-    num_items = 5
+    num_items = int(args.items)
+    # is_verbose = args.verbose
 
-    ds = RectangularDataset(num_cells_in_row, side_length, num_items)
+    ds = RectangularDataset(num_rows, side_length, num_items)
 
-    ds.create_dataset()
+    ds_folder = ds.create_dataset()
 
-    print('Task finished.')
+    print(f'Task finished. Created {num_items} Maze images {ds_folder}')
 
-    # if len(argv) == 4:
-    #     num_cells_in_row = int(argv[1])
-    #     side_length = int(argv[2])
-    #     num_items = int(argv[3])
-    #     ds = RectangularDataset(num_cells_in_row, side_length, num_items)
-    #
-    #     ds.create_dataset()
-    #
-    #     print('Task finished.')
-    #
-    # else:
-    #     print('Usage:')
-    #     print('python generate_rect_dataset.py NUM_CELLS CELL_SIDE_LEN NUM_MAZES')
