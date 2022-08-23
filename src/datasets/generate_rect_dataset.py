@@ -18,10 +18,12 @@ from rectangular_kruskal_maze import RectangularKruskalMaze
 
 class RectangularDataset:
 
-    def __init__(self, row_len, side_len, num_mazes):
+    def __init__(self, row_len, side_len, num_mazes, verbose_output):
         self.n = row_len
         self.side_len = side_len
         self.num_mazes = num_mazes
+
+        self.verbose_output = verbose_output
 
     def create_dataset(self):
         start_time = time.time()
@@ -67,9 +69,9 @@ class RectangularDataset:
             value = maze_id
 
             if key in maze_hashes:
-                output_line = f"Duplicate found for Maze#{maze_id} with Maze#{maze_hashes[key]}\n"
+                output_line = f"[info] Duplicate found for Maze#{maze_id} with Maze#{maze_hashes[key]}\n"
                 output_line += f"{spanning_tree_str}\n"
-                output_line += "Generating again\n"
+                output_line += "[info] Generating again\n"
                 log_file.write(output_line)
 
                 print(output_line)
@@ -82,10 +84,11 @@ class RectangularDataset:
             maze_image_path = f'{dataset_images_dir}/{maze_id}.png'
             maze_image.save(maze_image_path)
 
-            # output_line = f'Maze created #{maze_id}, {key}\n' # no need to print hash (key)
-            output_line = f'Maze created #{maze_id}\n'
-            log_file.write(output_line)
-            print(output_line, end='')
+            if self.verbose_output:
+                # output_line = f'Maze created #{maze_id}, {key}\n' # no need to print hash (key)
+                output_line = f'Maze created #{maze_id}\n'
+                log_file.write(output_line)
+                print(output_line, end='')
 
             maze_hashes[key] = maze_id
             tree_file.write(f'{maze_id}: {spanning_tree_str}\n')
@@ -110,12 +113,12 @@ if __name__ == '__main__':
     parser.add_argument('-rows', help='Number of row (or cells per row)')
     parser.add_argument('-width', help='Wall width in pixels')
     parser.add_argument('-items', help='Dataset size (number of images to generate)')
-    # parser.add_argument("-verbose", help="Verbose output")
+    parser.add_argument("-verbose", action=argparse.BooleanOptionalAction, help="Verbose output")
 
     args = parser.parse_args()
 
     if args.rows is None or args.width is None or args.items is None:
-        print("Please provide all optional arguments.")
+        print("Please provide all optional arguments:")
         parser.print_help()
         exit(1)
 
@@ -124,9 +127,9 @@ if __name__ == '__main__':
     side_length = int(args.width)
     # number of mazes to generate in the dataset
     num_items = int(args.items)
-    # is_verbose = args.verbose
+    is_verbose = True if args.verbose else False
 
-    ds = RectangularDataset(num_rows, side_length, num_items)
+    ds = RectangularDataset(num_rows, side_length, num_items, is_verbose)
 
     ds_folder = ds.create_dataset()
 
