@@ -5,12 +5,12 @@ from turtle import *
 from typing import Tuple
 
 from algorithms.disjoint_set import DisjointSet
+from src.color_scheme import ColorScheme
 
 
 class TriangularMaze:
 
     def __init__(self, side_len, num_levels):
-        # TODO: check if it is good to have even number of levels?
 
         self.side_len = side_len
         self.num_levels = num_levels
@@ -38,6 +38,8 @@ class TriangularMaze:
         # compute the length of perpendicular dividing the equilateral triangle into
         # 2 right angled triangles.
         self.triangle_height = self.compute_triangle_height(self.side_len)
+
+        self.clr_scheme = ColorScheme()
 
     def compute_triangle_height(self, side):
         # apply Pythagoras theorem
@@ -188,6 +190,7 @@ class TriangularMaze:
                     pendown()
 
                 # draw bottom
+                self.clr_scheme.next_color(color)
                 forward(self.side_len)
                 penup()
 
@@ -196,6 +199,7 @@ class TriangularMaze:
                     pendown()
 
                 left(120)
+                self.clr_scheme.next_color(color)
                 forward(self.side_len)
                 penup()
 
@@ -210,6 +214,7 @@ class TriangularMaze:
                     pendown()
 
                 left(120)
+                self.clr_scheme.next_color(color)
                 forward(self.side_len)
 
                 # now draw the triangle towards its right
@@ -254,7 +259,7 @@ class TriangularMaze:
 if __name__ == '__main__':
     hideturtle()
     speed(100)
-    pensize(2)
+    pensize(5)
 
     # set full screen for canvas
     screen = Screen()
